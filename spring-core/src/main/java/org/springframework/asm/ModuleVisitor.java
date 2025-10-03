@@ -75,15 +75,28 @@ public abstract class ModuleVisitor {
         && api != Opcodes.ASM10_EXPERIMENTAL) {
       throw new IllegalArgumentException("Unsupported api " + api);
     }
-    // SPRING PATCH: no preview mode check for ASM experimental
+    if (api == Opcodes.ASM10_EXPERIMENTAL) {
+      Constants.checkAsmExperimental(this);
+    }
     this.api = api;
     this.mv = moduleVisitor;
   }
 
   /**
+   * The module visitor to which this visitor must delegate method calls. May be {@literal null}.
+   *
+   * @return the module visitor to which this visitor must delegate method calls, or {@literal
+   *     null}.
+   */
+  public ModuleVisitor getDelegate() {
+    return mv;
+  }
+
+  /**
    * Visit the main class of the current module.
    *
-   * @param mainClass the internal name of the main class of the current module.
+   * @param mainClass the internal name of the main class of the current module (see {@link
+   *     Type#getInternalName()}).
    */
   public void visitMainClass(final String mainClass) {
     if (mv != null) {
@@ -94,7 +107,7 @@ public abstract class ModuleVisitor {
   /**
    * Visit a package of the current module.
    *
-   * @param packaze the internal name of a package.
+   * @param packaze the internal name of a package (see {@link Type#getInternalName()}).
    */
   public void visitPackage(final String packaze) {
     if (mv != null) {
@@ -119,7 +132,7 @@ public abstract class ModuleVisitor {
   /**
    * Visit an exported package of the current module.
    *
-   * @param packaze the internal name of the exported package.
+   * @param packaze the internal name of the exported package (see {@link Type#getInternalName()}).
    * @param access the access flag of the exported package, valid values are among {@code
    *     ACC_SYNTHETIC} and {@code ACC_MANDATED}.
    * @param modules the fully qualified names (using dots) of the modules that can access the public
@@ -134,7 +147,7 @@ public abstract class ModuleVisitor {
   /**
    * Visit an open package of the current module.
    *
-   * @param packaze the internal name of the opened package.
+   * @param packaze the internal name of the opened package (see {@link Type#getInternalName()}).
    * @param access the access flag of the opened package, valid values are among {@code
    *     ACC_SYNTHETIC} and {@code ACC_MANDATED}.
    * @param modules the fully qualified names (using dots) of the modules that can use deep
@@ -150,7 +163,7 @@ public abstract class ModuleVisitor {
    * Visit a service used by the current module. The name must be the internal name of an interface
    * or a class.
    *
-   * @param service the internal name of the service.
+   * @param service the internal name of the service (see {@link Type#getInternalName()}).
    */
   public void visitUse(final String service) {
     if (mv != null) {
@@ -161,9 +174,9 @@ public abstract class ModuleVisitor {
   /**
    * Visit an implementation of a service.
    *
-   * @param service the internal name of the service.
-   * @param providers the internal names of the implementations of the service (there is at least
-   *     one provider).
+   * @param service the internal name of the service (see {@link Type#getInternalName()}).
+   * @param providers the internal names (see {@link Type#getInternalName()}) of the implementations
+   *     of the service (there is at least one provider).
    */
   public void visitProvide(final String service, final String... providers) {
     if (mv != null) {

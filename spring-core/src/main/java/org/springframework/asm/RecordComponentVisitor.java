@@ -75,7 +75,9 @@ public abstract class RecordComponentVisitor {
         && api != Opcodes.ASM10_EXPERIMENTAL) {
       throw new IllegalArgumentException("Unsupported api " + api);
     }
-    // SPRING PATCH: no preview mode check for ASM experimental
+    if (api == Opcodes.ASM10_EXPERIMENTAL) {
+      Constants.checkAsmExperimental(this);
+    }
     this.api = api;
     this.delegate = recordComponentVisitor;
   }
