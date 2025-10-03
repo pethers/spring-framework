@@ -53,10 +53,9 @@ public interface Opcodes {
   /**
    * <i>Experimental, use at your own risk. This field will be renamed when it becomes stable, this
    * will break existing code using it. Only code compiled with --enable-preview can use this.</i>
-   *
-   * @deprecated This API is experimental.
+   * <p>SPRING PATCH: no preview mode check for ASM 10 experimental, enabling it by default.
    */
-  @Deprecated int ASM10_EXPERIMENTAL = 1 << 24 | 10 << 16 | 0 << 8;
+  int ASM10_EXPERIMENTAL = 1 << 24 | 10 << 16 | 0 << 8;
 
   /*
    * Internal flags used to redirect calls to deprecated methods. For instance, if a visitOldStuff

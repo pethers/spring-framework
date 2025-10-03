@@ -1091,6 +1091,13 @@ public class ClassWriter extends ClassVisitor {
    * @return ClassLoader
    */
   protected ClassLoader getClassLoader() {
-    return getClass().getClassLoader();
+    // SPRING PATCH: prefer thread context ClassLoader for application classes
+    ClassLoader classLoader = null;
+    try {
+      classLoader = Thread.currentThread().getContextClassLoader();
+    } catch (Throwable ex) {
+      // Cannot access thread context ClassLoader - falling back...
+    }
+    return (classLoader != null ? classLoader : getClass().getClassLoader());
   }
 }

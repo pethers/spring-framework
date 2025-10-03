@@ -326,7 +326,9 @@ public class ClassReader {
       }
       outputStream.flush();
       if (readCount == 1) {
-        return data;
+        // SPRING PATCH: some misbehaving InputStreams return -1 but still write to buffer (gh-27429)
+        // return data;
+        // END OF PATCH
       }
       return outputStream.toByteArray();
     } finally {
@@ -2689,6 +2691,11 @@ public class ClassReader {
    * @return a non null Label, which must be equal to labels[bytecodeOffset].
    */
   protected Label readLabel(final int bytecodeOffset, final Label[] labels) {
+    // SPRING PATCH: leniently handle offset mismatch
+    if (bytecodeOffset >= labels.length) {
+      return new Label();
+    }
+    // END OF PATCH
     if (labels[bytecodeOffset] == null) {
       labels[bytecodeOffset] = new Label();
     }
